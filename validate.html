@@ -1,0 +1,203 @@
+﻿<!DOCTYPE HTML>
+<html>
+    <head>
+        <title>jQuery Validate</title>
+		<style>
+			body
+			{
+				background-color:#E6E3E3;
+			}
+			input
+			{
+				border: 1px solid black;
+			}
+			
+			input.error 
+			{ 
+				border: 1px solid red;
+			}
+			
+			label.error 
+			{
+				position: relative;
+				margin-left:4px;;
+				background:url("unchecked.gif") #d4d4d4 no-repeat 2px 5px;
+				padding-left: 18px;
+				padding-bottom: 4px;
+				padding-top: 4px;
+				padding-right:8px;
+				font-weight: bold;
+				color: black;
+				border-radius: 8px;
+			}
+			
+			label.error:after
+			{
+				content: "";
+				position: absolute;
+				width: 0;
+				height: 0;
+				border: 6px solid transparent;
+				border-right-color: #d4d4d4;
+				top: 50%;
+				right: 99%;
+				margin-top:-7px;
+			}
+			
+			label.checked 
+			{
+				margin-left:auto;
+				background:url("checked.gif") no-repeat 0px 6px;
+			}
+			
+			label.checked:after
+			{
+				content:initial;
+			}
+		</style>
+    </head>
+
+    <body>
+        <form id="myform" method="post" action="">
+            <p>
+                <label for="myname">邮编：</label>
+                <input id="myname" name="myname" />
+            </p>
+            <p>
+                <label for="email">E-Mail：</label>
+                <input id="email" name="email" />
+            </p>
+            <p>
+                <label for="password">登陆密码：</label>
+                <input id="password" name="password" type="password" />
+            </p>
+            <p>
+                <label for="confirm_password">确认密码：</label>
+                <input id="confirm_password" name="confirm_password" type="password" />
+            </p>
+			<p>
+                <label for="confirm_password">选择:</label>
+                <select name="select" id="select">
+					<option value="1">唱歌</option>
+					<option value="2">跳舞</option>
+					<option value="3">运动</option>
+				</select>
+            </p>
+			<p>
+                <label for="rd1">篮球:</label>
+                <input type="radio" name="rd" id="rd1"/>
+				<label for="rd2">足球:</label>
+				<input type="radio" name="rd" id="rd2"/>
+            </p>
+			<p>
+                <label for="favorite">level:</label>
+				<input type="checkbox" id="sport" name="favorite" value="sport" />sport
+				<input type="checkbox" id="write" name="favorite" value="write" />write
+            </p>
+            <p>
+                <input class="submit" type="submit" value="立即注册" />
+            </p>
+        </form>
+		<script type="text/javascript" src="jquery.js"></script>
+        <script type="text/javascript" src="jquery.validate.js"></script>
+        <script type="text/javascript">
+        $(function(){
+             $("#myform").validate({
+                debug: true, //调试模式取消submit的默认提交功能   
+                errorClass: "error", //默认为错误的样式类为：error   
+                focusInvalid: true, //当为false时，验证无效时，没有焦点响应   
+                submitHandler: function(form){   //表单提交句柄,为一回调函数，带一个参数：form   
+                    alert("提交表单"); 
+                    form.submit();   //提交表单   
+                },   
+				success: function(label) {
+				},
+				highlight: function(element, errorClass) {
+				$(element).addClass(errorClass);
+				$(element).parent().find("." + errorClass).removeClass("checked");
+				},
+				onfocusin:function(element){
+					$(element).valid(); 
+				},
+				unhighlight: function(element, errorClass) {
+				$(element).parent().find("." + errorClass).addClass("checked");
+				$(element).removeClass(errorClass);
+				},
+				errorPlacement: function(error, element) {
+				/*if (element.is(":radio"))
+				{
+					error.appendTo(element.parent());
+				}
+				else if (element.is(":checkbox"))
+					{
+						error.appendTo(element.parent());
+					}
+				else*/
+					error.appendTo(element.parent());
+				},
+                rules:{
+                    myname:{
+                        required:true,
+                    },
+                    email:{
+                        required:true,
+                        email:true
+                    },
+                    password:{
+                        required:true,
+                        rangelength:[3,10]
+                    },
+                    confirm_password:{
+						required:true,
+                        equalTo:"#password",
+                    },
+					select:{
+						//isTrue:"3"
+					},
+					favorite:{
+						required:true,
+						isTrue:"sport"
+					},
+					rd:{
+						required:true,
+					},
+                },
+                messages:{
+                    myname:{
+                        required:"必填",
+                    },
+                    email:{
+                        required:"必填",
+                        email:"E-Mail格式不正确"
+                    },
+                    password:{
+                        required: "不能为空",
+                        rangelength: "密码最小长度:{0},最大长度:{1}."
+                    },
+                    confirm_password:{
+						required: "不能为空",
+                        equalTo:"两次密码输入不一致"
+                    },
+					favorite:{
+						 required:"必填",
+					},
+					rd:{
+						 required:"请选择一项",
+					},					
+                }
+                         
+            });  
+			jQuery.validator.addMethod("isZipCode", function(value, element) {   
+				var tel = /^[0-9]{6}$/;
+				return this.optional(element) || (tel.test(value));
+			}, "请正确填写您的邮政编码");
+			jQuery.validator.addMethod("isTrue", function(value, element,param) {   
+				return this.optional(element) || value==param;
+			}, "请选上运动");
+			$("#myname").rules("add","isZipCode");
+			$("#select").rules("add",{isTrue:3});
+			
+        });
+        </script>
+    </body>
+</html>
